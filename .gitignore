@@ -1,0 +1,5 @@
+# deps
+vendor
+# build exe & scripts
+.clangd
+build
