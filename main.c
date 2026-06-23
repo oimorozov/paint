@@ -8,7 +8,7 @@
 
 #define WINDOW_SIZE 800
 #define BRUSH_SIZE 5
-#define CMD_CAP 128 
+#define CMD_CAP 128
 
 #define CMD_LINE_W WINDOW_SIZE * 0.9f
 #define CMD_LINE_H WINDOW_SIZE * 0.3f
@@ -93,8 +93,10 @@ void execute_command(Config *config, const char *cmd) {
         }
     } else if (strcmp(name, ":clear") == 0) {
         BeginTextureMode(config->canvas);
-        ClearBackground(DARKGRAY);
+            ClearBackground(DARKGRAY);
         EndTextureMode();
+    } else if (strcmp(name, ":help") == 0) {
+        // TODO
     }
 }
 
@@ -103,7 +105,7 @@ int main() {
     InitConfig(&config);
 
     BeginTextureMode(config.canvas);
-    ClearBackground(DARKGRAY);
+        ClearBackground(DARKGRAY);
     EndTextureMode();
 
     while (!WindowShouldClose()) {
@@ -141,7 +143,7 @@ int main() {
                 }
             }
 
-            if (IsKeyPressed(KEY_ENTER)) {
+            if (IsKeyPressed(KEY_ENTER) || config.cmd_idx == 0) {
                 execute_command(&config, config.cmd);
                 config.command_mode = false;
                 config.cmd_idx = 0;
