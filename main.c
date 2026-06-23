@@ -88,7 +88,7 @@ void execute_command(Config *config, const char *cmd) {
     if (strcmp(name, ":b") == 0) {
         int size = atoi(args);
 
-        if (size > 0) {
+        if (0 < size && size < 101) {
             config->brush_size = size;
         }
     } else if (strcmp(name, ":clear") == 0) {
