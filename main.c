@@ -135,6 +135,12 @@ int main() {
                 ch = GetCharPressed();
             }
 
+            if (IsKeyPressed(KEY_BACKSPACE)) {
+                if (config.cmd_idx != 0) {
+                    config.cmd[--config.cmd_idx] = '\0';
+                }
+            }
+
             if (IsKeyPressed(KEY_ENTER)) {
                 execute_command(&config, config.cmd);
                 config.command_mode = false;
