@@ -8,7 +8,7 @@
 
 #define WINDOW_SIZE 800
 #define BRUSH_SIZE 5
-#define CMD_CAP 16
+#define CMD_CAP 128 
 
 #define CMD_LINE_W WINDOW_SIZE * 0.9f
 #define CMD_LINE_H WINDOW_SIZE * 0.3f
@@ -91,6 +91,10 @@ void execute_command(Config *config, const char *cmd) {
         if (size > 0) {
             config->brush_size = size;
         }
+    } else if (strcmp(name, ":clear") == 0) {
+        BeginTextureMode(config->canvas);
+        ClearBackground(DARKGRAY);
+        EndTextureMode();
     }
 }
 
@@ -106,8 +110,10 @@ int main() {
         // draw
         BeginTextureMode(config.canvas);
             config.curr_pos = GetMousePosition();
-            if (IsMouseButtonDown(MOUSE_LEFT_BUTTON) || IsKeyDown(KEY_LEFT_SHIFT)) {
+            if (IsMouseButtonDown(MOUSE_LEFT_BUTTON) || IsKeyDown(KEY_LEFT_SUPER)) {
                 DrawLineVec(config.curr_pos, config.prev_pos, config.brush_size, WHITE);
+            } else if (IsMouseButtonDown(MOUSE_BUTTON_RIGHT) || IsKeyDown(KEY_RIGHT_SUPER)) {
+                DrawLineVec(config.curr_pos, config.prev_pos, config.brush_size, DARKGRAY);
             }
             config.prev_pos = config.curr_pos;
         EndTextureMode();
