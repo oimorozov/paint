@@ -1,73 +1,16 @@
+// libc
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+
+// raylib
 #include "raylib.h"
 
-#define WINDOW_SIZE 800
-#define INIT_BRUSH_SIZE 5
-#define INIT_ERASER_SIZE 5
-#define CMD_CAP 128
-
-#define FONT_SIZE fmin(16, WINDOW_SIZE / 2)
-
-#define CMD_LINE_W WINDOW_SIZE
-#define CMD_LINE_H fmin(20, WINDOW_SIZE / 2)
-#define CMD_LINE_Y WINDOW_SIZE - CMD_LINE_H
-
-#define BACKGROUND_COLOR DARKGRAY
-#define BRUSH_COLOR WHITE
-#define CMD_LINE_COLOR LIGHTGRAY
-#define FONT_COLOR BLACK
-
-struct Config {
-    RenderTexture2D canvas;
-
-    Vector2 curr_pos;
-    Vector2 prev_pos;
-
-    int brush_size;
-    int eraser_size;
-
-    bool command_mode;
-    size_t cmd_idx;
-    char cmd[CMD_CAP];
-};
-typedef struct Config Config;
-
-/* returns 1 if succes, else 0 */
-int InitConfig(Config *config) {
-    // window
-    InitWindow(WINDOW_SIZE, WINDOW_SIZE, "paint");
-    SetTargetFPS(60);
-
-    // canvas
-    config->canvas = LoadRenderTexture(WINDOW_SIZE, WINDOW_SIZE);
-
-    // mouse positions
-    config->curr_pos = (Vector2){0};
-    config->prev_pos = (Vector2){0};
-
-    // brush_size
-    config->brush_size = INIT_BRUSH_SIZE;
-    config->eraser_size = INIT_ERASER_SIZE;
-
-    // command mode
-    config->command_mode = false;
-    config->cmd_idx = 0;
-    config->cmd[config->cmd_idx] = '\0';
-
-    return 1;
-}
-
-void DestroyConfig(Config *config) {
-    // canvas
-    UnloadRenderTexture(config->canvas);
-
-    // window
-    CloseWindow();
-}
+// headers
+#include "component.h"
+#include "config.h"
 
 void DrawLineVec(Vector2 start_pos, Vector2 end_pos, int brush_size, Color color) {
     float dx = end_pos.x - start_pos.x;
@@ -86,44 +29,14 @@ void DrawLineVec(Vector2 start_pos, Vector2 end_pos, int brush_size, Color color
     }
 }
 
-void execute_command(Config *config, const char *cmd) {
-    char name[CMD_CAP / 2] = {0};
-    char args[CMD_CAP / 2] = {0};
-
-    sscanf(cmd, "%s %s", name, args);
-
-    if (strcmp(name, ":b") == 0) {
-        int brush_size = atoi(args);
-
-        if (0 < brush_size && brush_size < 101) {
-            config->brush_size = brush_size;
-        }
-    } else if (strcmp(name, ":e") == 0) {
-        int eraser_size = atoi(args);
-
-        if (0 < eraser_size && eraser_size < 101) {
-            config->eraser_size = eraser_size;
-        }
-    } else if (strcmp(name, ":clear") == 0) {
-        BeginTextureMode(config->canvas);
-        ClearBackground(DARKGRAY);
-        EndTextureMode();
-    } else if (strcmp(name, ":save") == 0) {
-        Image image = LoadImageFromTexture(config->canvas.texture);
-        ImageFlipVertical(&image);
-        ExportImage(image, args);
-        UnloadImage(image);
-    } else if (strcmp(name, ":help") == 0) {
-        // TODO
-    }
-}
-
 int main() {
     Config config = {0};
     InitConfig(&config);
+    Component component = {0};
+    InitComponent(&component);
 
     BeginTextureMode(config.canvas);
-    ClearBackground(DARKGRAY);
+        ClearBackground(DARKGRAY);
     EndTextureMode();
 
     while (!WindowShouldClose()) {
@@ -151,6 +64,8 @@ int main() {
 
             // if user pressed multiple times during one frame
             while (ch > 0) {
+                config.color_palette_cmp_mode = false;
+
                 if (config.cmd_idx < CMD_CAP - 1) {
                     config.cmd[config.cmd_idx++] = ch;
                     config.cmd[config.cmd_idx] = '\0';
@@ -180,9 +95,14 @@ int main() {
                 DrawRectangle(0, CMD_LINE_Y, CMD_LINE_W, CMD_LINE_H, CMD_LINE_COLOR);
                 DrawText(config.cmd, FONT_SIZE, CMD_LINE_Y + CMD_LINE_H / 2 - FONT_SIZE / 2, FONT_SIZE, FONT_COLOR);
             }
+
+            if (config.color_palette_cmp_mode) {
+                DrawColorPaletteCmp(component.color_palette_cmp);
+            }
         EndDrawing();
     }
 
     DestroyConfig(&config);
+    DestroyComponent(&component);
     return 0;
 }
