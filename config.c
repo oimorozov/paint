@@ -28,7 +28,7 @@ void InitConfig(Config *config) {
     config->brush_color = INIT_BRUSH_COLOR;
 
     // command mode
-    config->command_mode = false;
+    config->command_line_cmp_mode = false;
     config->cmd_idx = 0;
     config->cmd[config->cmd_idx] = '\0';
 

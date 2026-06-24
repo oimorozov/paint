@@ -54,7 +54,7 @@ struct Config {
     int eraser_size;
     Color brush_color;
 
-    bool command_mode;
+    bool command_line_cmp_mode;
     size_t cmd_idx;
     char cmd[CMD_CAP];
 

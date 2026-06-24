@@ -30,6 +30,12 @@ void DrawLineVec(Vector2 start_pos, Vector2 end_pos, int brush_size, Color color
     }
 }
 
+bool CanDraw(Config *config) {
+    if (config->command_line_cmp_mode) return false;
+    if (config->color_palette_cmp_mode) return false;
+    return true;
+}
+
 int main() {
     Config config = {0};
     InitConfig(&config);
@@ -45,7 +51,7 @@ int main() {
         BeginTextureMode(config.canvas);
             config.curr_pos = GetMousePosition();
             // brush
-            if (!config.command_mode || (config.command_mode && !CheckCollisionPointRec(config.curr_pos, component.command_line_cmp->rect))) {
+            if (CanDraw(&config) || (!CanDraw(&config) && !CheckCollisionPointRec(config.curr_pos, component.command_line_cmp->rect))) {
                 if (IsMouseButtonDown(MOUSE_LEFT_BUTTON) || IsKeyDown(KEY_LEFT_SUPER)) {
                     DrawLineVec(config.curr_pos, config.prev_pos, config.brush_size, config.brush_color);
                 }
@@ -59,10 +65,10 @@ int main() {
 
         // commands
         if (IsKeyPressed(KEY_SEMICOLON) && IsKeyDown(KEY_LEFT_SHIFT)) {
-            config.command_mode = true;
+            config.command_line_cmp_mode = true;
         }
 
-        if (config.command_mode) {
+        if (config.command_line_cmp_mode) {
             int ch = GetCharPressed();
 
             // if user pressed multiple times during one frame
@@ -84,7 +90,7 @@ int main() {
 
             if (IsKeyPressed(KEY_ENTER) || config.cmd_idx == 0) {
                 execute_command(&config, config.cmd);
-                config.command_mode = false;
+                config.command_line_cmp_mode = false;
                 config.cmd_idx = 0;
                 config.cmd[0] = '\0';
             }
@@ -95,7 +101,7 @@ int main() {
             DrawTextureRec(config.canvas.texture, (Rectangle){0, 0, (float)config.canvas.texture.width, (float)-config.canvas.texture.height}, (Vector2){0, 0}, WHITE);
             DrawRectangleLinesEx((Rectangle){0, 0, config.canvas.texture.width, config.canvas.texture.height}, BORDER_THICKNESS_CMP, BLACK);
 
-            if (config.command_mode) {
+            if (config.command_line_cmp_mode) {
                 DrawCommandLineCmp(component.command_line_cmp);
                 DrawCommandLineTextCmp(config.cmd);
             }
