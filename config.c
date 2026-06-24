@@ -18,9 +18,10 @@ void InitConfig(Config *config) {
     config->curr_pos = (Vector2){0};
     config->prev_pos = (Vector2){0};
 
-    // brush_size
+    // brushes
     config->brush_size = INIT_BRUSH_SIZE;
     config->eraser_size = INIT_ERASER_SIZE;
+    config->brush_color = INIT_BRUSH_COLOR;
 
     // command mode
     config->command_mode = false;
@@ -59,12 +60,12 @@ void execute_command(Config *config, const char *cmd) {
         }
     } else if (strcmp(name, ":clear") == 0) {
         BeginTextureMode(config->canvas);
-            ClearBackground(DARKGRAY);
+            ClearBackground(BACKGROUND_COLOR);
         EndTextureMode();
     } else if (strcmp(name, ":save") == 0) {
         Image image = LoadImageFromTexture(config->canvas.texture);
         ImageFlipVertical(&image);
-    }else if (strcmp(name, ":colors") == 0) {
+    }else if (strcmp(name, ":color") == 0) {
         config->color_palette_cmp_mode = true;
     } else if (strcmp(name, ":help") == 0) {
         // TODO

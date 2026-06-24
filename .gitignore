@@ -3,3 +3,5 @@ vendor
 # build exe & scripts
 .clangd
 build
+COMPILE
+RUN

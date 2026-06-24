@@ -15,6 +15,7 @@
 void DrawLineVec(Vector2 start_pos, Vector2 end_pos, int brush_size, Color color) {
     float dx = end_pos.x - start_pos.x;
     float dy = end_pos.y - start_pos.y;
+
     float dist = sqrtf(dx * dx + dy * dy);
     if (dist == 0) {
         DrawCircleV(start_pos, brush_size, color);
@@ -36,7 +37,7 @@ int main() {
     InitComponent(&component);
 
     BeginTextureMode(config.canvas);
-        ClearBackground(DARKGRAY);
+        ClearBackground(BACKGROUND_COLOR);
     EndTextureMode();
 
     while (!WindowShouldClose()) {
@@ -44,12 +45,14 @@ int main() {
         BeginTextureMode(config.canvas);
             config.curr_pos = GetMousePosition();
             // brush
-            if (IsMouseButtonDown(MOUSE_LEFT_BUTTON) || IsKeyDown(KEY_LEFT_SUPER)) {
-                DrawLineVec(config.curr_pos, config.prev_pos, config.brush_size, BRUSH_COLOR);
-            }
-            // eraser
-            else if (IsMouseButtonDown(MOUSE_BUTTON_RIGHT) || IsKeyDown(KEY_RIGHT_SUPER)) {
-                DrawLineVec(config.curr_pos, config.prev_pos, config.eraser_size, BACKGROUND_COLOR);
+            if (!config.command_mode || (config.command_mode && !CheckCollisionPointRec(config.curr_pos, component.command_line_cmp->rect))) {
+                if (IsMouseButtonDown(MOUSE_LEFT_BUTTON) || IsKeyDown(KEY_LEFT_SUPER)) {
+                    DrawLineVec(config.curr_pos, config.prev_pos, config.brush_size, config.brush_color);
+                }
+                // eraser
+                else if (IsMouseButtonDown(MOUSE_BUTTON_RIGHT) || IsKeyDown(KEY_RIGHT_SUPER)) {
+                    DrawLineVec(config.curr_pos, config.prev_pos, config.eraser_size, BACKGROUND_COLOR);
+                }
             }
             config.prev_pos = config.curr_pos;
         EndTextureMode();
@@ -89,16 +92,18 @@ int main() {
 
         // copy canvas to window
         BeginDrawing();
-            DrawTextureRec(config.canvas.texture, (Rectangle){0, 0, (float)config.canvas.texture.width, (float)-config.canvas.texture.height}, (Vector2){0, 0}, GRAY);
+            DrawTextureRec(config.canvas.texture, (Rectangle){0, 0, (float)config.canvas.texture.width, (float)-config.canvas.texture.height}, (Vector2){0, 0}, WHITE);
+            DrawRectangleLinesEx((Rectangle){0, 0, config.canvas.texture.width, config.canvas.texture.height}, BORDER_THICKNESS_CMP, BLACK);
 
             if (config.command_mode) {
-                DrawRectangle(0, CMD_LINE_Y, CMD_LINE_W, CMD_LINE_H, CMD_LINE_COLOR);
-                DrawText(config.cmd, FONT_SIZE, CMD_LINE_Y + CMD_LINE_H / 2 - FONT_SIZE / 2, FONT_SIZE, FONT_COLOR);
+                DrawCommandLineCmp(component.command_line_cmp);
+                DrawCommandLineTextCmp(config.cmd);
             }
 
             if (config.color_palette_cmp_mode) {
-                DrawColorPaletteCmp(component.color_palette_cmp);
+                DrawColorPaletteCmp(component.color_palette_cmp, &config);
             }
+            DrawFPS(0, 0);
         EndDrawing();
     }
 
