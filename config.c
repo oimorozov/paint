@@ -1,8 +1,12 @@
 #include "config.h"
-#include "raylib.h"
 
 #include <stdio.h>
 #include <string.h>
+
+#include "raylib.h"
+
+#include "objc/save_file.h"
+
 
 /* returns 1 if succes, else 0 */
 void InitConfig(Config *config) {
@@ -65,6 +69,9 @@ void execute_command(Config *config, const char *cmd) {
     } else if (strcmp(name, ":save") == 0) {
         Image image = LoadImageFromTexture(config->canvas.texture);
         ImageFlipVertical(&image);
+        char *file_path = save_file();
+        ExportImage(image, file_path);
+        UnloadImage(image);
     }else if (strcmp(name, ":color") == 0) {
         config->color_palette_cmp_mode = true;
     } else if (strcmp(name, ":help") == 0) {

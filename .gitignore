@@ -5,3 +5,7 @@ vendor
 build
 COMPILE
 RUN
+# app
+paint.app
+# MacOS
+.DS_Store
