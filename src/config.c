@@ -78,3 +78,9 @@ void execute_command(Config *config, const char *cmd) {
         // TODO
     }
 }
+
+bool CanDraw(Config *config) {
+    if (config->command_line_cmp_mode) return false;
+    if (config->color_palette_cmp_mode) return false;
+    return true;
+}

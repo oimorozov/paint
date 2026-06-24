@@ -68,4 +68,6 @@ void DestroyConfig(Config *config);
 
 void execute_command(Config *config, const char *cmd);
 
+bool CanDraw(Config *config);
+
 #endif // CONFIG_H

@@ -30,12 +30,7 @@ void DrawLineVec(Vector2 start_pos, Vector2 end_pos, int brush_size, Color color
     }
 }
 
-bool CanDraw(Config *config) {
-    if (config->command_line_cmp_mode) return false;
-    if (config->color_palette_cmp_mode) return false;
-    return true;
-}
-
+// NOW
 int main() {
     Config config = {0};
     InitConfig(&config);
@@ -117,3 +112,21 @@ int main() {
     DestroyComponent(&component);
     return 0;
 }
+
+// TODO
+//
+// goal
+/*
+ * int main(void) {
+ *     Paint paint = {0};
+ *     InitPaint(paint);
+ *
+ *     while (!WindowShouldClose()) {
+ *         UpdatePaint(&paint);
+ *         RenderPaint(&paint);
+ *     }
+ *
+ *     DestroyPaint(&paint);
+ * }
+ *
+ */
