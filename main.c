@@ -109,7 +109,10 @@ void execute_command(Config *config, const char *cmd) {
         ClearBackground(DARKGRAY);
         EndTextureMode();
     } else if (strcmp(name, ":save") == 0) {
-        // TODO
+        Image image = LoadImageFromTexture(config->canvas.texture);
+        ImageFlipVertical(&image);
+        ExportImage(image, args);
+        UnloadImage(image);
     } else if (strcmp(name, ":help") == 0) {
         // TODO
     }
